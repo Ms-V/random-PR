@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #define NAME_MAX 30
 #define MAX_LOCAL 30
 
@@ -24,6 +25,12 @@ int du_check_int[4];
 
 int game_times=0;
 int enter_check(int);
+void least_10();
+struct least_10s{
+    int id;
+    char mapname[NAME_MAX];
+    char localname[NAME_MAX];
+}least_10_r[10];
 
 int main()
 {
@@ -36,6 +43,10 @@ int main()
     int player;
     int enter_cheack_main;
     int chose_map;
+    for(int count_c = 0; count_c < 10;count_c++)
+    {
+        least_10_r[count_c].id = -1;
+    }
     puts("几个人(输入1到4)?按0退出！！！！");
     while((player = getch())!='0')
     {
@@ -50,6 +61,7 @@ int main()
             printf("3.%s\n",pubg[2].map_name);
             printf("4.%s\n",pubg[3].map_name);
             printf("当前游戏次数为：%d\n",game_times);
+            least_10();
             while((chose_map=getch())!='0')
             {
                 chose_map = chose_map - '0';
@@ -66,30 +78,32 @@ int main()
                     printf("3.%s\n",pubg[2].map_name);
                     printf("4.%s\n",pubg[3].map_name);
                     printf("当前游戏次数为：%d\n",game_times);
+                    least_10();
                 }
                 else
                 {
                     puts("输入错误！！！！！一到四就行");
-                    Sleep(1000);
+                    Sleep(10000);
                     system("cls");
-                    puts("选图！！！按Q返回更改人数！！！");
+                    puts("选图！！！按0返回更改人数！！！");
                     printf("1.%s\n",pubg[0].map_name);
                     printf("2.%s\n",pubg[1].map_name);
                     printf("3.%s\n",pubg[2].map_name);
                     printf("4.%s\n",pubg[3].map_name);
                     printf("当前游戏次数为：%d\n",game_times);
+                    least_10();
                 }
             }
-            Sleep(1000);
+            Sleep(10000);
             system("cls");
             puts("来吧重新输几个人！！！");
         }
         else
         {
             puts("输入错误！！！！！一到四就行");
-            Sleep(1000);
+            Sleep(10000);
             system("cls");
-            puts("几个人(输入1到4)?按Q退出！！！！");
+            puts("几个人(输入1到4)?按0退出！！！！");
         }
     }
 }
@@ -98,9 +112,26 @@ char * random_local(int player_num,struct map * map_chose)
 {
     srand(time(0));
     int rand_num;
-        do{
-            rand_num=(int)rand() % MAX_LOCAL + 1;
-        } while (map_chose->loacl_map[rand_num-1].max_player<player_num);
+    do{
+        rand_num=(int)rand() % MAX_LOCAL + 1;
+    } while (map_chose->loacl_map[rand_num-1].max_player<player_num);
+    for (int count = 0; count < 10;count++)
+    {
+        if(least_10_r[count].id==-1)
+        {
+            memcpy(least_10_r[count].localname,map_chose->loacl_map[rand_num - 1].local_name,sizeof(char)*NAME_MAX);
+            least_10_r[count].id = count;
+            memcpy(least_10_r[count].mapname,map_chose->map_name,sizeof(char)*NAME_MAX);
+            return map_chose->loacl_map[rand_num-1].local_name;
+        }
+    }
+    for (int recount = 9; recount > 0;recount--)
+    {
+        memcpy(least_10_r[recount].localname,least_10_r[recount-1].localname,sizeof(char)*NAME_MAX);
+        memcpy(least_10_r[recount].mapname,least_10_r[recount-1].mapname,sizeof(char)*NAME_MAX);
+    }
+    memcpy(least_10_r[0].localname,map_chose->loacl_map[rand_num - 1].local_name,sizeof(char)*NAME_MAX);
+    memcpy(least_10_r[0].mapname,map_chose->map_name,sizeof(char)*NAME_MAX);
     return map_chose->loacl_map[rand_num-1].local_name;
 }
 
@@ -120,3 +151,16 @@ int enter_check(int enter)
     }
 }
 
+void least_10()
+{
+    puts("");
+    puts("近10次跳伞记录");
+    for (int count = 0; count < 10;count++)
+    {
+        if(least_10_r[count].id==-1)
+            break;
+        else
+            printf("%d. %s的%s\n",least_10_r[count].id+1,least_10_r[count].mapname,least_10_r[count].localname);
+    }
+    puts("");
+}
