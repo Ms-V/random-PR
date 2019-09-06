@@ -75,7 +75,7 @@ int main()
                 {  
                     printf("就决定了！！！跳这里！！%s",random_local(player,&pubg[chose_map-1]));
                     game_times++;
-                    Sleep(1000);
+                    Sleep(5000);
                     system("cls");
                     puts("选图！！！按0返回更改人数！！！");
                     printf("1.%s\n",pubg[0].map_name);
@@ -99,14 +99,14 @@ int main()
                     least_10();
                 }
             }
-            Sleep(1000);
+            Sleep(5000);
             system("cls");
             puts("来吧重新输几个人！！！");
         }
         else
         {
             puts("输入错误！！！！！一到四就行");
-            Sleep(1000);
+            Sleep(5000);
             system("cls");
             puts("几个人(输入1到4)?按0退出！！！！");
         }
@@ -171,7 +171,7 @@ void least_10()
         if(least_10_r[count].id==-1)
             break;
         else
-            printf("%d. %s的%s MAP的ID.%d Local的ID.%d\n",least_10_r[count].id+1,least_10_r[count].mapname,least_10_r[count].localname,least_10_r[count].map_id,least_10_r[count].local_id);
+            printf("%d. %s的%s\n",least_10_r[count].id+1,least_10_r[count].mapname,least_10_r[count].localname);
     }
     puts("");
 }
