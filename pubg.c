@@ -25,12 +25,17 @@ int du_check_int[4];
 
 int game_times=0;
 int enter_check(int);
-void least_10();
+int local_re_check(int ,int );
+
+
 struct least_10s{
     int id;
     char mapname[NAME_MAX];
+    int map_id;
     char localname[NAME_MAX];
+    int local_id;
 }least_10_r[10];
+void least_10();
 
 int main()
 {
@@ -70,7 +75,7 @@ int main()
                 {  
                     printf("就决定了！！！跳这里！！%s",random_local(player,&pubg[chose_map-1]));
                     game_times++;
-                    Sleep(10000);
+                    Sleep(1000);
                     system("cls");
                     puts("选图！！！按0返回更改人数！！！");
                     printf("1.%s\n",pubg[0].map_name);
@@ -83,7 +88,7 @@ int main()
                 else
                 {
                     puts("输入错误！！！！！一到四就行");
-                    Sleep(10000);
+                    Sleep(5000);
                     system("cls");
                     puts("选图！！！按0返回更改人数！！！");
                     printf("1.%s\n",pubg[0].map_name);
@@ -94,14 +99,14 @@ int main()
                     least_10();
                 }
             }
-            Sleep(10000);
+            Sleep(1000);
             system("cls");
             puts("来吧重新输几个人！！！");
         }
         else
         {
             puts("输入错误！！！！！一到四就行");
-            Sleep(10000);
+            Sleep(1000);
             system("cls");
             puts("几个人(输入1到4)?按0退出！！！！");
         }
@@ -114,7 +119,7 @@ char * random_local(int player_num,struct map * map_chose)
     int rand_num;
     do{
         rand_num=(int)rand() % MAX_LOCAL + 1;
-    } while (map_chose->loacl_map[rand_num-1].max_player<player_num);
+    } while (map_chose->loacl_map[rand_num-1].max_player<player_num||(local_re_check(map_chose->map_id,map_chose->loacl_map[rand_num-1].local_id))==0);
     for (int count = 0; count < 10;count++)
     {
         if(least_10_r[count].id==-1)
@@ -122,16 +127,22 @@ char * random_local(int player_num,struct map * map_chose)
             memcpy(least_10_r[count].localname,map_chose->loacl_map[rand_num - 1].local_name,sizeof(char)*NAME_MAX);
             least_10_r[count].id = count;
             memcpy(least_10_r[count].mapname,map_chose->map_name,sizeof(char)*NAME_MAX);
+            least_10_r[count].local_id = map_chose->loacl_map[rand_num - 1].local_id;
+            least_10_r[count].map_id = map_chose->map_id;
             return map_chose->loacl_map[rand_num-1].local_name;
         }
     }
-    for (int recount = 9; recount > 0;recount--)
+    for (int recount = 9; recount  >0;recount--)
     {
         memcpy(least_10_r[recount].localname,least_10_r[recount-1].localname,sizeof(char)*NAME_MAX);
         memcpy(least_10_r[recount].mapname,least_10_r[recount-1].mapname,sizeof(char)*NAME_MAX);
+        least_10_r[recount].local_id = least_10_r[recount - 1].local_id;
+        least_10_r[recount].map_id = least_10_r[recount - 1].map_id;
     }
     memcpy(least_10_r[0].localname,map_chose->loacl_map[rand_num - 1].local_name,sizeof(char)*NAME_MAX);
     memcpy(least_10_r[0].mapname,map_chose->map_name,sizeof(char)*NAME_MAX);
+    least_10_r[0].local_id = map_chose->loacl_map[rand_num - 1].local_id;
+    least_10_r[0].map_id = map_chose->map_id;
     return map_chose->loacl_map[rand_num-1].local_name;
 }
 
@@ -160,7 +171,38 @@ void least_10()
         if(least_10_r[count].id==-1)
             break;
         else
-            printf("%d. %s的%s\n",least_10_r[count].id+1,least_10_r[count].mapname,least_10_r[count].localname);
+            printf("%d. %s的%s MAP的ID.%d Local的ID.%d\n",least_10_r[count].id+1,least_10_r[count].mapname,least_10_r[count].localname,least_10_r[count].map_id,least_10_r[count].local_id);
     }
     puts("");
+}
+
+int local_re_check(int map_in,int local_in)//1为返回退出，表示没有一样的
+{
+    int total_local=0;
+    for (int count_local = 0; count_local < 5;count_local++)
+    {
+        if(least_10_r[count_local].id==-1)
+        {
+            if(count_local==0)
+            {
+                return 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            total_local++;
+        }
+    }
+    for (int count_check = 0; count_check < total_local;count_check++)
+    {
+        if(least_10_r[count_check].local_id==local_in&&least_10_r[count_check].map_id==map_in)
+        {
+            return 0;
+        }
+    }
+    return 1;
 }
